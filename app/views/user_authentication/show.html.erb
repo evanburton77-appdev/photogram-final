@@ -1,0 +1,159 @@
+<h1><%= @the_user.username %></h1>
+
+<dl>
+
+<% if @the_user.private == true %>
+  <dt>Private</dt>
+  <dd>True</dd>
+<% else %>
+  <dt>Private</dt>
+  <dd>False</dd>
+<% end %>
+
+  <dt>Followers</dt>
+  <dd>
+    <%= FollowRequest.where({ :recipient_id => @the_user.id }).where({ :status => "accepted" }).count %>
+
+    </div>
+<% if @current_user.present? && @the_user.id == @current_user.id %>
+      <h4>Pending follow requests</h4>
+
+      <ul>
+      <% FollowRequest.where({ :recipient_id => @the_user.id }).each do |request| %>
+          <li>
+            <%= User.where({ :id => request.sender_id }).first.username %>
+
+            <form action="/modify_follow_request/<%= request.id %>" method="post">
+              <input name="query_status" value="accepted" type="hidden">
+
+              <button>
+                Accept
+              </button>
+            </form>
+
+            <form action="/modify_follow_request/<%= request.id %>" method="post">
+              <input name="query_status" value="rejected" type="hidden">
+            
+              <button>
+                Reject
+              </button>
+            </form>
+          </li>
+          <% end %>
+        </ul>
+        <% else %>
+      
+       <% end %>
+  <% if FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first == nil %>
+            <form action="/insert_follow_request" method="post">
+            <input type="hidden" name="query_sender_id" id="query_sender_id" value="<%= @current_user.id %>">
+            <input type="hidden" name="query_recipient_id" id="query_recipient_id" value="<%= @the_user.id %>">
+            <button>Follow</button>
+            </form>
+  <% elsif FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first.status == "pending" %>
+            Request sent. 
+            <a href="/delete_follow_request/<%= FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first.id %>">
+              Cancel
+            </a>
+  <% elsif FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first.status == "accepted" %>
+              <a href="/delete_follow_request/<%= FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first.id %>">
+              Unfollow
+            </a>
+  <% else %>
+  
+ 
+  <% end %>
+  <dt>Following</dt>
+  <dd><%= FollowRequest.where({ :sender_id => @the_user.id }).where({ :status => "accepted" }).count %></dd>
+
+<% if @the_user.id == @current_user.id %>
+  <dt>Edit user</dt>
+  <dd>
+    <form action="/modify_user/<%= @current_user.id %>" method="post">
+      <label for="browser_username">Username</label>
+      <input id="browser_username" type="text" name="query_username" placeholder="Enter a username..."
+        value="<%= @current_user.username %>">
+
+      <label for="browser_private">Private?</label>
+      <input id="browser_private" type="checkbox" name="query_private"  checked>
+
+      <button>Update user</button>
+    </form>
+  </dd>
+</dl>
+<% else %>
+ 
+<% end %>
+<nav>
+  <ul>
+    <li>
+      <a href="/users/<%= @the_user.username %>">Profile</a>
+    </li>
+    <li>
+      <a href="/users/<%= @the_user.username %>/liked_photos">Liked photos</a>
+    </li>
+    <li>
+      <a href="/users/<%= @the_user.username %>/feed">Feed</a>
+    </li>
+    <li>
+      <a href="/users/<%= @the_user.username %>/discover">Discover</a>
+    </li>
+  </ul>
+</nav>
+
+<h2>Own photos (<%= Photo.where({ :owner_id => @the_user.id }).count %>) </h2>
+
+<table border="1">
+  <tr>
+    <th>
+      Image
+    </th>
+
+    <th>
+      Owner
+    </th>
+
+    <th>
+      Caption
+    </th>
+
+    <th>
+      Posted
+    </th>
+
+    <th>
+      Likes
+    </th>
+
+    <th></th>
+  </tr>
+<% Photo.where({ :owner_id => @the_user.id }).each do |photo|%>
+  <tr>
+    <td>
+      <img src="<%= photo.image %>">
+    </td>
+
+    <td>
+      <%= User.where({ :id => photo.owner_id }).first.username %>
+    </td>
+
+    <td>
+      <%= photo.caption %>
+    </td>
+
+    <td>
+      <%= time_ago_in_words(photo.created_at) %> ago
+    </td>
+
+    <td>
+      <%= photo.likes_count %>
+    </td>
+
+    <td>
+      <a href="/photos/<%= photo.id %>">
+        Show details
+      </a>
+    </td>
+  </tr>
+  <% end %>
+</table>

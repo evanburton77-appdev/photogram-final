@@ -21,4 +21,5 @@ class Photo < ApplicationRecord
   has_many(:fan_followers, { :through => :fans, :source => :following })
   validates(:owner_id, { :presence => true })
   validates(:image, { :presence => true })
+  mount_uploader :image, ImageUploader
 end

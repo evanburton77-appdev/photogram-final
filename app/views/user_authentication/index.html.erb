@@ -1,0 +1,63 @@
+<h1>List of users</h1>
+
+
+<table border="1">
+
+  <tr>
+    <th>
+      Username
+    </th>
+
+    <th>
+      Private?
+    </th>
+
+    <th></th>
+    <th></th>
+  </tr>
+<% User.all.each do |user| %>
+    <tr>
+      <td>
+        <%= user.username %>
+      </td>
+
+      <td>
+          <% if user.private == true %>
+          Yes
+          <% else %>
+          No
+          <% end %>
+
+      </td>
+
+
+
+      <td>
+<% if @current_user.present? %>
+  <% if FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => user.id }).first == nil %>
+            <form action="/insert_follow_request" method="post">
+            <input type="hidden" name="query_sender_id" id="query_sender_id" value="<%= @current_user.id %>">
+            <input type="hidden" name="query_recipient_id" id="query_recipient_id" value="<%= user.id %>">
+            <button>Follow</button>
+            </form>
+  <% elsif FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => user.id }).first.status == "pending" %>
+            Request sent. 
+            <a href="/delete_follow_request/<%= FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => user.id }).first.id %>">
+              Cancel
+            </a>
+  <% elsif FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => user.id }).first.status == "accepted" %>
+              <a href="/delete_follow_request/<%= FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => user.id }).first.id %>">
+              Unfollow
+            </a>
+  <% else %>
+  
+  <% end %>
+<% else %> 
+
+<% end %>
+      </td>
+
+      <td>
+        <a href="/users/<%= user.username %>">Show details</a>
+      </td>
+<% end %>

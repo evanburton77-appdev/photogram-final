@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_20_202857) do
+ActiveRecord::Schema.define(version: 2023_04_20_210005) do
 
   create_table "comments", force: :cascade do |t|
     t.text "body"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2023_04_20_202857) do
     t.integer "photo_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "author_id"
   end
 
   create_table "follow_requests", force: :cascade do |t|
@@ -25,6 +26,7 @@ ActiveRecord::Schema.define(version: 2023_04_20_202857) do
     t.integer "recipient_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "status"
   end
 
   create_table "likes", force: :cascade do |t|
@@ -32,6 +34,7 @@ ActiveRecord::Schema.define(version: 2023_04_20_202857) do
     t.integer "photo_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "fan_id"
   end
 
   create_table "photos", force: :cascade do |t|
@@ -54,6 +57,9 @@ ActiveRecord::Schema.define(version: 2023_04_20_202857) do
     t.integer "own_photos_count"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "private"
+    t.integer "likes_count"
+    t.integer "comments_count"
   end
 
 end
