@@ -35,8 +35,11 @@
         <label for="owner_id_box">
           Owner
         </label>
-
-        <input type="text" id="owner_id_box" name="query_owner_id">
+<% if @current_user.present? %>
+        <input type="text" id="owner_id_box" value="<%= @current_user.id %>" name="query_owner_id">
+<% else %>
+ <input type="text" id="owner_id_box" value="" name="query_owner_id">
+ <% end %>
       </div>
 
       <div>
@@ -64,7 +67,7 @@
       </div>
 
       <button>
-        Create photo
+        Add photo
       </button>
     </form>
   </div>
@@ -126,7 +129,7 @@
         </td>
 
         <td>
-          <%= a_photo.image %>
+          <img src="<%= a_photo.image %>">
         </td>
 
         <td>

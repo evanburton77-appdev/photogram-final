@@ -16,32 +16,34 @@
 
     </div>
 <% if @current_user.present? && @the_user.id == @current_user.id %>
-  <h4>Pending follow requests</h4>
+      <h4>Pending follow requests</h4>
 
-  <ul>
-    <% FollowRequest.where({ :recipient_id => @the_user.id, :status => "pending" }).each do |request| %>
-      <li>
-        <%= User.where({ :id => request.sender_id }).first.username %>
-        <form action="/modify_follow_request/<%= request.id %>" method="post">
-          <input name="query_status" value="accepted" type="hidden">
+      <ul>
+      <% FollowRequest.where({ :recipient_id => @the_user.id }).each do |request| %>
+          <li>
+            <%= User.where({ :id => request.sender_id }).first.username %>
 
-          <button>
-            Accept
-          </button>
-        </form>
+            <form action="/modify_follow_request/<%= request.id %>" method="post">
+              <input name="query_status" value="accepted" type="hidden">
 
-        <form action="/modify_follow_request/<%= request.id %>" method="post">
-          <input name="query_status" value="rejected" type="hidden">
-        
-          <button>
-            Reject
-          </button>
-        </form>
-      </li>
-    <% end %>
-  </ul>
+              <button>
+                Accept
+              </button>
+            </form>
+
+            <form action="/modify_follow_request/<%= request.id %>" method="post">
+              <input name="query_status" value="rejected" type="hidden">
+            
+              <button>
+                Reject
+              </button>
+            </form>
+          </li>
+          <% end %>
+        </ul>
+        <% else %>
       
-<% end %>
+       <% end %>
   <% if FollowRequest.all.where({ :sender_id => @current_user.id }).where({ :recipient_id => @the_user.id }).first == nil %>
             <form action="/insert_follow_request" method="post">
             <input type="hidden" name="query_sender_id" id="query_sender_id" value="<%= @current_user.id %>">
@@ -82,6 +84,7 @@
 <% else %>
  
 <% end %>
+
 <nav>
   <ul>
     <li>
@@ -99,7 +102,7 @@
   </ul>
 </nav>
 
-<h2>Own photos (<%= Photo.where({ :owner_id => @the_user.id }).count %>) </h2>
+<h2>Liked photos (<%= Like.where({ :fan_id => @the_user.id }).count %>) </h2>
 
 <table border="1">
   <tr>
@@ -125,30 +128,30 @@
 
     <th></th>
   </tr>
-<% Photo.where({ :owner_id => @the_user.id }).each do |photo|%>
+<% Like.where({ :fan_id => @the_user.id }).each do |like|%>
   <tr>
     <td>
-      <img src="<%= photo.image %>">
+      <img src="<%= Photo.where({ :id => like.photo_id }).first.image %>">
     </td>
 
     <td>
-      <%= User.where({ :id => photo.owner_id }).first.username %>
+      <%= User.where({ :id => Photo.where({ :id => like.photo_id }).first.owner_id }).first.username %>
     </td>
 
     <td>
-      <%= photo.caption %>
+      <%= Photo.where({ :id => like.photo_id }).first.caption %>
     </td>
 
     <td>
-      <%= time_ago_in_words(photo.created_at) %> ago
+      <%= time_ago_in_words(Photo.where({ :id => like.photo_id }).first.created_at) %> ago
     </td>
 
     <td>
-      <%= photo.likes_count %>
+      <%= Photo.where({ :id => like.photo_id }).first.likes_count %>
     </td>
 
     <td>
-      <a href="/photos/<%= photo.id %>">
+      <a href="/photos/<%= Photo.where({ :id => like.photo_id }).first.id %>">
         Show details
       </a>
     </td>

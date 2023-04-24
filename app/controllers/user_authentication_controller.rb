@@ -6,13 +6,31 @@ class UserAuthenticationController < ApplicationController
     render({ :template => "user_authentication/index.html.erb" })
   end
 
+  def liked_photos
+    username = params.fetch("username")
+    @the_user = User.where({ :username => username }).first
+    render({ :template => "user_authentication/liked_photos.html.erb" })
+  end
+
+  def feed
+    username = params.fetch("username")
+    @the_user = User.where({ :username => username }).first
+    render({ :template => "user_authentication/feed.html.erb" })
+  end
+
+  def discover
+    username = params.fetch("username")
+    @the_user = User.where({ :username => username }).first
+    render({ :template => "user_authentication/discover.html.erb" })
+  end
+
   def show
     if @current_user.present?
       username = params.fetch("username")
       @the_user = User.where({ :username => username }).first
       render({ :template => "user_authentication/show.html.erb" })
     else
-      redirect_to("/user_sign_up", { :alert => "You have to sign in first." })
+      redirect_to("/user_sign_in", { :alert => "You have to sign in first." })
     end
   end
 
@@ -43,7 +61,7 @@ class UserAuthenticationController < ApplicationController
   def destroy_cookies
     reset_session
 
-    redirect_to("/", { :notice => "Signed out successfully." })
+    redirect_to("/user_sign_in", { :notice => "Signed out successfully." })
   end
 
   def sign_up_form

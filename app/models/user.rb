@@ -24,7 +24,17 @@ class User < ApplicationRecord
   has_many(:sent_follow_requests, { :class_name => "FollowRequest", :foreign_key => "sender_id", :dependent => :destroy })
   has_many(:received_follow_requests, { :class_name => "FollowRequest", :foreign_key => "recipient_id", :dependent => :destroy })
   has_many(:own_photos, { :class_name => "Photo", :foreign_key => "owner_id", :dependent => :destroy })
-  has_many(:following, { :through => :sent_follow_requests, :source => :recipient })
+  has_many(:following, { :through => :sent_follow_requests, :source => :recipient, :class_name => "User" })
+
+  def accepted_following
+    user_ids = self.accepted_follow_requests.map(&:recipient_id)
+    User.where(id: user_ids)
+  end
+
+  def accepted_follow_requests
+    FollowRequest.where({ :sender_id => self.id, :status => "accepted" })
+  end
+
   has_many(:followers, { :through => :received_follow_requests, :source => :sender })
   has_many(:liked_photos, { :through => :likes, :source => :photo })
   has_many(:feed, { :through => :following, :source => :own_photos })

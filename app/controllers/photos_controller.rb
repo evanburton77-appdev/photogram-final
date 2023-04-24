@@ -1,6 +1,7 @@
 class PhotosController < ApplicationController
   def index
-    matching_photos = Photo.all
+    public_users = User.where({ :private => false }).ids
+    matching_photos = Photo.all.where({ :owner_id => public_users })
 
     @list_of_photos = matching_photos.order({ :created_at => :desc })
 
@@ -8,13 +9,17 @@ class PhotosController < ApplicationController
   end
 
   def show
-    the_id = params.fetch("path_id")
+    if @current_user.present?
+      the_id = params.fetch("path_id")
 
-    matching_photos = Photo.where({ :id => the_id })
+      matching_photos = Photo.where({ :id => the_id })
 
-    @the_photo = matching_photos.at(0)
+      @the_photo = matching_photos.at(0)
 
-    render({ :template => "photos/show.html.erb" })
+      render({ :template => "photos/show.html.erb" })
+    else
+      redirect_to("/user_sign_in", { :alert => "You have to sign in first" })
+    end
   end
 
   def create
@@ -28,7 +33,7 @@ class PhotosController < ApplicationController
 
     if the_photo.valid?
       the_photo.save
-      redirect_to("/photos", { :notice => "Photo created successfully." })
+      redirect_to("/", { :notice => "Photo created successfully" })
     else
       redirect_to("/photos", { :alert => the_photo.errors.full_messages.to_sentence })
     end
@@ -47,7 +52,7 @@ class PhotosController < ApplicationController
 
     if the_photo.valid?
       the_photo.save
-      redirect_to("/photos/#{the_photo.id}", { :notice => "Photo updated successfully."} )
+      redirect_to("/photos/#{the_photo.id}", { :notice => "Photo updated successfully." })
     else
       redirect_to("/photos/#{the_photo.id}", { :alert => the_photo.errors.full_messages.to_sentence })
     end
@@ -59,6 +64,6 @@ class PhotosController < ApplicationController
 
     the_photo.destroy
 
-    redirect_to("/photos", { :notice => "Photo deleted successfully."} )
+    redirect_to("/photos", { :notice => "Photo deleted successfully." })
   end
 end

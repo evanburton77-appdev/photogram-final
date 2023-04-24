@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_20_210005) do
+ActiveRecord::Schema.define(version: 2023_04_24_153657) do
 
   create_table "comments", force: :cascade do |t|
     t.text "body"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2023_04_20_210005) do
   end
 
   create_table "photos", force: :cascade do |t|
-    t.string "caption"
+    t.text "caption"
     t.string "image"
     t.integer "owner_id"
     t.string "location"
